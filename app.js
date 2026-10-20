@@ -15,32 +15,35 @@ async function startServer() {
     await client.connect()
     console.log('MongoDB connected successfully')
 
-    const db = client.db('shoppingDB')
+    const db = client.db('db_456qba72c')
     const products = db.collection('products')
-
-    app.get('/products', async (req, res) => {
-      try {
-        const data = await products.find().toArray()
-        res.json(data)
-      } catch (error) {
-        res.status(500).json({ message: 'Error fetching products' })
-      }
-    })
 
     app.post('/products', async (req, res) => {
       try {
         const { productId, productName, price, category } = req.body
 
         const result = await products.insertOne({
-          productId,
+          productId: Number(productId),
           productName,
           price: Number(price),
           category
         })
 
-        res.status(201).json(result)
+        res.status(201).json({
+          message: 'Product inserted successfully',
+          insertedId: result.insertedId
+        })
       } catch (error) {
-        res.status(500).json({ message: 'Error adding product' })
+        res.status(500).json({ message: error.message })
+      }
+    })
+
+    app.get('/products', async (req, res) => {
+      try {
+        const data = await products.find().toArray()
+        res.json(data)
+      } catch (error) {
+        res.status(500).json({ message: error.message })
       }
     })
 
