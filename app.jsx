@@ -1,38 +1,60 @@
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import './App.css'
 
 function Product({ productName, price }) {
-  const [productPrice, setProductPrice] = useState(price)
-
-  useEffect(() => {
-    console.log("Shopping Cart System Loaded")
-  }, [])
-
   return (
     <div className="product">
       <h2>{productName}</h2>
-      <p>Price: ₹{productPrice}</p>
-
-      <button onClick={() => setProductPrice(Math.max(0, productPrice - 200))}>
-        Apply ₹200 Discount
-      </button>
+      <p>Price: ₹{price}</p>
     </div>
   )
 }
 
 function App() {
-  const [name, setName] = useState('')
+  const [productId, setProductId] = useState('')
+  const [productName, setProductName] = useState('')
   const [price, setPrice] = useState('')
+  const [category, setCategory] = useState('')
   const [product, setProduct] = useState(null)
+  const [message, setMessage] = useState('')
 
-  const addProduct = (e) => {
+  const addProduct = async (e) => {
     e.preventDefault()
 
-    setProduct({
-      productName: name,
-      price: Number(price)
-    })
+    try {
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          productId: Number(productId),
+          productName,
+          price: Number(price),
+          category
+        })
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setProduct({
+          productName,
+          price: Number(price)
+        })
+
+        setMessage('Product saved successfully in MongoDB!')
+        setProductId('')
+        setProductName('')
+        setPrice('')
+        setCategory('')
+      } else {
+        setMessage(data.message || 'Product insertion failed')
+      }
+    } catch (error) {
+      setMessage('Cannot connect to backend')
+    }
   }
 
   return (
@@ -41,9 +63,16 @@ function App() {
 
       <form onSubmit={addProduct}>
         <input
+          placeholder="Enter Product ID"
+          value={productId}
+          onChange={e => setProductId(e.target.value)}
+          required
+        />
+
+        <input
           placeholder="Enter Product Name"
-          value={name}
-          onChange={e => setName(e.target.value)}
+          value={productName}
+          onChange={e => setProductName(e.target.value)}
           required
         />
 
@@ -52,12 +81,21 @@ function App() {
           placeholder="Enter Product Price"
           value={price}
           onChange={e => setPrice(e.target.value)}
-          min="200"
+          min="0"
+          required
+        />
+
+        <input
+          placeholder="Enter Category"
+          value={category}
+          onChange={e => setCategory(e.target.value)}
           required
         />
 
         <button type="submit">Add Product</button>
       </form>
+
+      <p>{message}</p>
 
       {product && (
         <Product
