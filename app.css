@@ -1,0 +1,50 @@
+body {
+background-color: brown;
+height: 100vh;
+margin: 0;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+#root {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+}
+
+h1 {
+  color: darkblue;
+  text-align: center;
+}
+
+
+input {
+  display: block;
+  width: 95%;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+button{
+  background-color:aquamarine;
+  color: pink;
+}
+button:hover{
+  background-color: black;
+  color:white;
+}
+form{
+  background-color: aquamarine;
+  padding: 20px;
+}
+.product {
+  background-color:aquamarine;
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid gray;
+  border-radius: 8px;
+}
